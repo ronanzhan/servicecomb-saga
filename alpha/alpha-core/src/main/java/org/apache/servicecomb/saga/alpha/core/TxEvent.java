@@ -1,3 +1,5 @@
+package org.apache.servicecomb.saga.alpha.core;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,223 +17,230 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.saga.alpha.core;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-@Entity
-@Table(name = "TxEvent")
 public class TxEvent {
-  @Transient
-  public static final long MAX_TIMESTAMP = 253402214400000L; // 9999-12-31 00:00:00
+    public static final long MAX_TIMESTAMP = 253402214400000L; // 9999-12-31 00:00:00
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long surrogateId;
+    private Long id;
 
-  private String serviceName;
-  private String instanceId;
-  private Date creationTime;
-  private String globalTxId;
-  private String localTxId;
-  private String parentTxId;
-  private String type;
-  private String compensationMethod;
-  private Date expiryTime;
-  private String retryMethod;
-  private int retries;
-  private byte[] payloads;
+    private String serviceName;
+    private String instanceId;
+    private Date createTime;
+    private Date modifyTime;
+    private String globalTxId;
+    private String localTxId;
+    private String parentTxId;
+    private String type;
+    private String compensationMethod;
+    private Date expiryTime;
+    private String retryMethod;
+    private int retries;
+    private byte[] payloads;
 
-  private TxEvent() {
-  }
+    public TxEvent() {
+    }
 
-  public TxEvent(TxEvent event) {
-    this(event.surrogateId,
-        event.serviceName,
-        event.instanceId,
-        event.creationTime,
-        event.globalTxId,
-        event.localTxId,
-        event.parentTxId,
-        event.type,
-        event.compensationMethod,
-        event.expiryTime,
-        event.retryMethod,
-        event.retries,
-        event.payloads);
-  }
+    public TxEvent id(long id) {
+        this.id = id;
+        return this;
+    }
 
-  public TxEvent(
-      String serviceName,
-      String instanceId,
-      String globalTxId,
-      String localTxId,
-      String parentTxId,
-      String type,
-      String compensationMethod,
-      byte[] payloads) {
-    this(serviceName, instanceId, new Date(), globalTxId, localTxId, parentTxId, type, compensationMethod, 0, "", 0,
-        payloads);
-  }
+    public TxEvent serviceName(String serviceName) {
+        this.serviceName = serviceName;
+        return this;
+    }
 
-  public TxEvent(
-      String serviceName,
-      String instanceId,
-      String globalTxId,
-      String localTxId,
-      String parentTxId,
-      String type,
-      String compensationMethod,
-      int timeout,
-      String retryMethod,
-      int retries,
-      byte[] payloads) {
-    this(-1L, serviceName, instanceId, new Date(), globalTxId, localTxId, parentTxId, type, compensationMethod, timeout,
-        retryMethod, retries, payloads);
-  }
+    public TxEvent instanceId(String instanceId) {
+        this.instanceId = instanceId;
+        return this;
+    }
 
-  public TxEvent(
-      String serviceName,
-      String instanceId,
-      Date creationTime,
-      String globalTxId,
-      String localTxId,
-      String parentTxId,
-      String type,
-      String compensationMethod,
-      int timeout,
-      String retryMethod,
-      int retries,
-      byte[] payloads) {
-    this(-1L, serviceName, instanceId, creationTime, globalTxId, localTxId, parentTxId, type, compensationMethod,
-        timeout, retryMethod, retries, payloads);
-  }
+    public TxEvent createTime(Date createTime) {
+        this.createTime = createTime;
+        return this;
+    }
 
-  TxEvent(Long surrogateId,
-      String serviceName,
-      String instanceId,
-      Date creationTime,
-      String globalTxId,
-      String localTxId,
-      String parentTxId,
-      String type,
-      String compensationMethod,
-      int timeout,
-      String retryMethod,
-      int retries,
-      byte[] payloads) {
-    this(surrogateId, serviceName, instanceId, creationTime, globalTxId, localTxId, parentTxId, type,
-        compensationMethod,
-        timeout == 0 ? new Date(MAX_TIMESTAMP) : new Date(creationTime.getTime() + SECONDS.toMillis(timeout)),
-        retryMethod,
-        retries,
-        payloads);
-  }
+    public TxEvent modifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
+        return this;
+    }
 
-  TxEvent(Long surrogateId,
-      String serviceName,
-      String instanceId,
-      Date creationTime,
-      String globalTxId,
-      String localTxId,
-      String parentTxId,
-      String type,
-      String compensationMethod,
-      Date expiryTime,
-      String retryMethod,
-      int retries,
-      byte[] payloads) {
-    this.surrogateId = surrogateId;
-    this.serviceName = serviceName;
-    this.instanceId = instanceId;
-    this.creationTime = creationTime;
-    this.globalTxId = globalTxId;
-    this.localTxId = localTxId;
-    this.parentTxId = parentTxId;
-    this.type = type;
-    this.compensationMethod = compensationMethod;
-    this.expiryTime = expiryTime;
-    this.retryMethod = retryMethod;
-    this.retries = retries;
-    this.payloads = payloads;
-  }
+    public TxEvent globalTxId(String globalTxId) {
+        this.globalTxId = globalTxId;
+        return this;
+    }
 
-  public String serviceName() {
-    return serviceName;
-  }
+    public TxEvent localTxId(String localTxId) {
+        this.localTxId = localTxId;
+        return this;
+    }
 
-  public String instanceId() {
-    return instanceId;
-  }
+    public TxEvent parentTxId(String parentTxId) {
+        this.parentTxId = parentTxId;
+        return this;
+    }
 
-  public Date creationTime() {
-    return creationTime;
-  }
+    public TxEvent type(String type) {
+        this.type = type;
+        return this;
+    }
 
-  public String globalTxId() {
-    return globalTxId;
-  }
+    public TxEvent compensationMethod(String compensationMethod) {
+        this.compensationMethod = compensationMethod;
+        return this;
+    }
 
-  public String localTxId() {
-    return localTxId;
-  }
+    public TxEvent expiryTime(Date expiryTime) {
+        this.expiryTime = expiryTime;
+        return this;
+    }
 
-  public String parentTxId() {
-    return parentTxId;
-  }
+    public TxEvent retryMethod(String retryMethod) {
+        this.retryMethod = retryMethod;
+        return this;
+    }
 
-  public String type() {
-    return type;
-  }
+    public TxEvent retries(int retries) {
+        this.retries = retries;
+        return this;
+    }
 
-  public String compensationMethod() {
-    return compensationMethod;
-  }
+    public TxEvent payloads(byte[] payloads) {
+        this.payloads = payloads;
+        return this;
+    }
 
-  public byte[] payloads() {
-    return payloads;
-  }
 
-  public long id() {
-    return surrogateId;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public Date expiryTime() {
-    return expiryTime;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public String retryMethod() {
-    return retryMethod;
-  }
+    public String getServiceName() {
+        return serviceName;
+    }
 
-  public int retries() {
-    return retries;
-  }
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
 
-  @Override
-  public String toString() {
-    return "TxEvent{" +
-        "surrogateId=" + surrogateId +
-        ", serviceName='" + serviceName + '\'' +
-        ", instanceId='" + instanceId + '\'' +
-        ", creationTime=" + creationTime +
-        ", globalTxId='" + globalTxId + '\'' +
-        ", localTxId='" + localTxId + '\'' +
-        ", parentTxId='" + parentTxId + '\'' +
-        ", type='" + type + '\'' +
-        ", compensationMethod='" + compensationMethod + '\'' +
-        ", expiryTime=" + expiryTime +
-        ", retryMethod='" + retryMethod + '\'' +
-        ", retries=" + retries +
-        '}';
-  }
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    public String getGlobalTxId() {
+        return globalTxId;
+    }
+
+    public void setGlobalTxId(String globalTxId) {
+        this.globalTxId = globalTxId;
+    }
+
+    public String getLocalTxId() {
+        return localTxId;
+    }
+
+    public void setLocalTxId(String localTxId) {
+        this.localTxId = localTxId;
+    }
+
+    public String getParentTxId() {
+        return parentTxId;
+    }
+
+    public void setParentTxId(String parentTxId) {
+        this.parentTxId = parentTxId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCompensationMethod() {
+        return compensationMethod;
+    }
+
+    public void setCompensationMethod(String compensationMethod) {
+        this.compensationMethod = compensationMethod;
+    }
+
+    public Date getExpiryTime() {
+        return expiryTime;
+    }
+
+    public void setExpiryTime(Date expiryTime) {
+        this.expiryTime = expiryTime;
+    }
+
+    public String getRetryMethod() {
+        return retryMethod;
+    }
+
+    public void setRetryMethod(String retryMethod) {
+        this.retryMethod = retryMethod;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public byte[] getPayloads() {
+        return payloads;
+    }
+
+    public void setPayloads(byte[] payloads) {
+        this.payloads = payloads;
+    }
+
+    @Override
+    public String toString() {
+        return "TxEvent{" +
+                "id=" + id +
+                ", serviceName='" + serviceName + '\'' +
+                ", instanceId='" + instanceId + '\'' +
+                ", createTime=" + createTime +
+                ", modifyTime=" + modifyTime +
+                ", globalTxId='" + globalTxId + '\'' +
+                ", localTxId='" + localTxId + '\'' +
+                ", parentTxId='" + parentTxId + '\'' +
+                ", type='" + type + '\'' +
+                ", compensationMethod='" + compensationMethod + '\'' +
+                ", expiryTime=" + expiryTime +
+                ", retryMethod='" + retryMethod + '\'' +
+                ", retries=" + retries +
+                '}';
+    }
 }

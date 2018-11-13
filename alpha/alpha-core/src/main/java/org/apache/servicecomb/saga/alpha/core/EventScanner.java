@@ -110,8 +110,8 @@ public class EventScanner implements Runnable {
     eventRepository.findFirstUncompensatedEventByIdGreaterThan(nextEndedEventId, TxEndedEvent.name())
         .forEach(event -> {
           LOG.info("Found uncompensated event {}", event);
-          nextEndedEventId = event.id();
-          commandRepository.saveCompensationCommands(event.globalTxId());
+          nextEndedEventId = event.getId();
+          commandRepository.saveCompensationCommands(event.getGlobalTxId());
         });
   }
 
@@ -120,7 +120,7 @@ public class EventScanner implements Runnable {
     eventRepository.findFirstCompensatedEventByIdGreaterThan(nextCompensatedEventId)
         .ifPresent(event -> {
           LOG.info("Found compensated event {}", event);
-          nextCompensatedEventId = event.id();
+          nextCompensatedEventId = event.getId();
           updateCompensationStatus(event);
         });
   }
@@ -135,10 +135,10 @@ public class EventScanner implements Runnable {
   }
 
   private void updateCompensationStatus(TxEvent event) {
-    commandRepository.markCommandAsDone(event.globalTxId(), event.localTxId());
+    commandRepository.markCommandAsDone(event.getGlobalTxId(), event.getLocalTxId());
     LOG.info("Transaction with globalTxId {} and localTxId {} was compensated",
-        event.globalTxId(),
-        event.localTxId());
+        event.getGlobalTxId(),
+        event.getLocalTxId());
 
     markSagaEnded(event);
   }
@@ -163,14 +163,14 @@ public class EventScanner implements Runnable {
   }
 
   private void markSagaEnded(TxEvent event) {
-    if (commandRepository.findUncompletedCommands(event.globalTxId()).isEmpty()) {
+    if (commandRepository.findUncompletedCommands(event.getGlobalTxId()).isEmpty()) {
       markGlobalTxEndWithEvent(event);
     }
   }
 
   private void markGlobalTxEndWithEvent(TxEvent event) {
     eventRepository.save(toSagaEndedEvent(event));
-    LOG.info("Marked end of transaction with globalTxId {}", event.globalTxId());
+    LOG.info("Marked end of transaction with globalTxId {}", event.getGlobalTxId());
   }
 
   private void markGlobalTxEndWithEvents(List<TxEvent> events) {
@@ -190,15 +190,16 @@ public class EventScanner implements Runnable {
   }
 
   private TxEvent toSagaEndedEvent(TxEvent event) {
-    return new TxEvent(
-        event.serviceName(),
-        event.instanceId(),
-        event.globalTxId(),
-        event.globalTxId(),
-        null,
-        SagaEndedEvent.name(),
-        "",
-        EMPTY_PAYLOAD);
+    return new TxEvent()
+            .globalTxId(event.getGlobalTxId())
+            .localTxId(event.getGlobalTxId())
+            .serviceName(event.getServiceName())
+            .instanceId(event.getInstanceId())
+            .parentTxId(null)
+            .type(SagaEndedEvent.name())
+            .payloads(EMPTY_PAYLOAD)
+            .compensationMethod("")
+            ;
   }
 
   @Trace("compensate")
