@@ -34,6 +34,7 @@ import org.apache.servicecomb.saga.alpha.core.PushBackOmegaCallback;
 import org.apache.servicecomb.saga.alpha.core.TxConsistentService;
 import org.apache.servicecomb.saga.alpha.core.TxEventRepository;
 import org.apache.servicecomb.saga.alpha.core.TxTimeoutRepository;
+import org.apache.servicecomb.saga.alpha.server.saga.dao.TxEventDaoImpl;
 import org.apache.servicecomb.saga.alpha.server.tcc.GrpcTccEventService;
 import org.apache.servicecomb.saga.alpha.server.tcc.callback.TccPendingTaskRunner;
 import org.apache.servicecomb.saga.alpha.server.tcc.service.TccEventScanner;
@@ -68,9 +69,14 @@ class AlphaConfig {
     return new PushBackOmegaCallback(pendingCompensations, new CompositeOmegaCallback(callbacks));
   }
   
+//  @Bean
+//  TxEventRepository springTxEventRepository(TxEventEnvelopeRepository eventRepo) {
+//    return new SpringTxEventRepository(eventRepo);
+//  }
+
   @Bean
-  TxEventRepository springTxEventRepository(TxEventEnvelopeRepository eventRepo) {
-    return new SpringTxEventRepository(eventRepo);
+  TxEventRepository txEventRepository(TxEventEnvelopeRepository eventRepo) {
+    return new TxEventDaoImpl();
   }
 
   @Bean

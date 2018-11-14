@@ -83,6 +83,6 @@ class SpringTxEventRepository implements TxEventRepository {
   @Override
   public void deleteDuplicateEvents(String type) {
     eventRepo.findDuplicateEventsByType(type).forEach((txEvent) ->eventRepo.
-            deleteBySurrogateId(txEvent.id()));
+            deleteBySurrogateId(txEvent.getId()));
   }
 }

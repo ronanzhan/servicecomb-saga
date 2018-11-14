@@ -24,11 +24,10 @@ public class TxEvent {
     public static final long MAX_TIMESTAMP = 253402214400000L; // 9999-12-31 00:00:00
 
     private Long id;
-
-    private String serviceName;
-    private String instanceId;
     private Date createTime;
     private Date modifyTime;
+    private String serviceName;
+    private String instanceId;
     private String globalTxId;
     private String localTxId;
     private String parentTxId;
@@ -40,6 +39,23 @@ public class TxEvent {
     private byte[] payloads;
 
     public TxEvent() {
+    }
+
+    public TxEvent(TxEvent txEvent) {
+        id(txEvent.getId())
+                .serviceName(txEvent.getServiceName())
+                .instanceId(txEvent.getInstanceId())
+                .createTime(txEvent.getCreateTime())
+                .globalTxId(txEvent.getGlobalTxId())
+                .localTxId(txEvent.getLocalTxId())
+                .parentTxId(txEvent.getParentTxId())
+                .type(txEvent.getType())
+                .compensationMethod(txEvent.getCompensationMethod())
+                .expiryTime(txEvent.getExpiryTime())
+                .retryMethod(txEvent.getRetryMethod())
+                .retries(txEvent.getRetries())
+                .payloads(txEvent.getPayloads())
+                ;
     }
 
     public TxEvent id(long id) {
@@ -225,6 +241,8 @@ public class TxEvent {
         this.payloads = payloads;
     }
 
+
+
     @Override
     public String toString() {
         return "TxEvent{" +
@@ -236,7 +254,7 @@ public class TxEvent {
                 ", globalTxId='" + globalTxId + '\'' +
                 ", localTxId='" + localTxId + '\'' +
                 ", parentTxId='" + parentTxId + '\'' +
-                ", type='" + type + '\'' +
+                ", type=" + type +
                 ", compensationMethod='" + compensationMethod + '\'' +
                 ", expiryTime=" + expiryTime +
                 ", retryMethod='" + retryMethod + '\'' +

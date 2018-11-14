@@ -47,12 +47,12 @@ public class PushBackOmegaCallback implements OmegaCallback {
   private void logError(TxEvent event, Exception e) {
     LOG.error(
         "Failed to {} service [{}] instance [{}] with method [{}], global tx id [{}] and local tx id [{}]",
-        event.retries() == 0 ? "compensate" : "retry",
-        event.serviceName(),
-        event.instanceId(),
-        event.retries() == 0 ? event.compensationMethod() : event.retryMethod(),
-        event.globalTxId(),
-        event.localTxId(),
+        event.getRetries() == 0 ? "compensate" : "retry",
+        event.getServiceName(),
+        event.getInstanceId(),
+        event.getRetries() == 0 ? event.getCompensationMethod() : event.getRetryMethod(),
+        event.getGlobalTxId(),
+        event.getLocalTxId(),
         e);
   }
 }

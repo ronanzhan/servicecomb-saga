@@ -35,15 +35,15 @@ public class CompositeOmegaCallback implements OmegaCallback {
 
   @Override
   public void compensate(TxEvent event) {
-    Map<String, OmegaCallback> serviceCallbacks = callbacks.getOrDefault(event.serviceName(), emptyMap());
+    Map<String, OmegaCallback> serviceCallbacks = callbacks.getOrDefault(event.getServiceName(), emptyMap());
 
     if (serviceCallbacks.isEmpty()) {
-      throw new AlphaException("No such omega callback found for service " + event.serviceName());
+      throw new AlphaException("No such omega callback found for service " + event.getServiceName());
     }
 
-    OmegaCallback omegaCallback = serviceCallbacks.get(event.instanceId());
+    OmegaCallback omegaCallback = serviceCallbacks.get(event.getInstanceId());
     if (omegaCallback == null) {
-      LOG.info("Cannot find the service with the instanceId {}, call the other instance.", event.instanceId());
+      LOG.info("Cannot find the service with the instanceId {}, call the other instance.", event.getInstanceId());
       omegaCallback = serviceCallbacks.values().iterator().next();
     }
 

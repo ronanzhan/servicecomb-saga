@@ -31,6 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import kamon.annotation.EnableKamon;
 import kamon.annotation.Trace;
 
+import org.apache.servicecomb.saga.common.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,15 +179,16 @@ public class EventScanner implements Runnable {
   }
 
   private TxEvent toTxAbortedEvent(TxTimeout timeout) {
-    return new TxEvent(
-        timeout.serviceName(),
-        timeout.instanceId(),
-        timeout.globalTxId(),
-        timeout.localTxId(),
-        timeout.parentTxId(),
-        TxAbortedEvent.name(),
-        "",
-        ("Transaction timeout").getBytes());
+
+    return new TxEvent()
+            .serviceName(timeout.serviceName())
+            .instanceId(timeout.instanceId())
+            .globalTxId(timeout.globalTxId())
+            .localTxId(timeout.localTxId())
+            .parentTxId(timeout.parentTxId())
+            .type(TxAbortedEvent.name())
+            .compensationMethod("")
+            .payloads("Transaction timeout".getBytes());
   }
 
   private TxEvent toSagaEndedEvent(TxEvent event) {
@@ -215,27 +217,28 @@ public class EventScanner implements Runnable {
   }
 
   private TxEvent txStartedEventOf(Command command) {
-    return new TxEvent(
-        command.serviceName(),
-        command.instanceId(),
-        command.globalTxId(),
-        command.localTxId(),
-        command.parentTxId(),
-        TxStartedEvent.name(),
-        command.compensationMethod(),
-        command.payloads());
+
+    return new TxEvent()
+            .serviceName(command.serviceName())
+            .instanceId(command.instanceId())
+            .globalTxId(command.globalTxId())
+            .localTxId(command.localTxId())
+            .parentTxId(command.parentTxId())
+            .type(TxStartedEvent.name())
+            .compensationMethod(command.compensationMethod())
+            .payloads(command.payloads());
   }
 
   private TxTimeout txTimeoutOf(TxEvent event) {
     return new TxTimeout(
-        event.id(),
-        event.serviceName(),
-        event.instanceId(),
-        event.globalTxId(),
-        event.localTxId(),
-        event.parentTxId(),
-        event.type(),
-        event.expiryTime(),
+        event.getId(),
+        event.getServiceName(),
+        event.getInstanceId(),
+        event.getGlobalTxId(),
+        event.getLocalTxId(),
+        event.getParentTxId(),
+            event.getType(),
+        event.getExpiryTime(),
         NEW.name());
   }
 }

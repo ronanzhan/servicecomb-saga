@@ -44,9 +44,9 @@ public class TxConsistentService {
   }
   @Segment(name = "handleTxEvent", category = "application", library = "kamon")
   public boolean handle(TxEvent event) {
-    if (types.contains(event.type()) && isGlobalTxAborted(event)) {
+    if (types.contains(event.getType()) && isGlobalTxAborted(event)) {
       LOG.info("Transaction event {} rejected, because its parent with globalTxId {} was already aborted",
-          event.type(), event.globalTxId());
+          event.getType(), event.getGlobalTxId());
       return false;
     }
 
@@ -57,6 +57,6 @@ public class TxConsistentService {
 
   @Segment(name = "isGlobalTxAborted", category = "application", library = "kamon")
   private boolean isGlobalTxAborted(TxEvent event) {
-    return !eventRepository.findTransactions(event.globalTxId(), TxAbortedEvent.name()).isEmpty();
+    return !eventRepository.findTransactions(event.getGlobalTxId(), TxAbortedEvent.name()).isEmpty();
   }
 }

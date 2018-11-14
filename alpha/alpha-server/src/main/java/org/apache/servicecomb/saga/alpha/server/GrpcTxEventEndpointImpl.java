@@ -25,6 +25,7 @@ import static java.util.Collections.emptyMap;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import kamon.annotation.EnableKamon;
 import kamon.annotation.Trace;
@@ -81,20 +82,23 @@ class GrpcTxEventEndpointImpl extends TxEventServiceImplBase {
   @Override
   @Trace("onTransactionEvent")
   public void onTxEvent(GrpcTxEvent message, StreamObserver<GrpcAck> responseObserver) {
-    boolean ok = txConsistentService.handle(new TxEvent(
-        message.getServiceName(),
-        message.getInstanceId(),
-        new Date(),
-        message.getGlobalTxId(),
-        message.getLocalTxId(),
-        message.getParentTxId().isEmpty() ? null : message.getParentTxId(),
-        message.getType(),
-        message.getCompensationMethod(),
-        message.getTimeout(),
-        message.getRetryMethod(),
-        message.getRetries(),
-        message.getPayloads().toByteArray()
-    ));
+    Date now = new Date();
+    TxEvent txEvent = new TxEvent()
+            .serviceName(message.getServiceName())
+            .instanceId(message.getInstanceId())
+            .createTime(now)
+            .globalTxId(message.getGlobalTxId())
+            .localTxId(message.getLocalTxId())
+            .parentTxId(message.getParentTxId().isEmpty()? null : message.getParentTxId())
+            .type(message.getType())
+            .compensationMethod(message.getCompensationMethod())
+            .expiryTime(message.getTimeout() == 0 ? new Date(TxEvent.MAX_TIMESTAMP) : new Date(now.getTime() +TimeUnit.SECONDS.toMillis(message.getTimeout())))
+            .retryMethod(message.getRetryMethod())
+            .retries(message.getRetries())
+            .payloads(message.getPayloads().toByteArray());
+
+    boolean ok = txConsistentService.handle(txEvent);
+
 
     responseObserver.onNext(ok ? ALLOW : REJECT);
     responseObserver.onCompleted();

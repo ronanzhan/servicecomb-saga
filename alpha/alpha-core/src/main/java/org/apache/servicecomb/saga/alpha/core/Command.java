@@ -35,7 +35,6 @@ public class Command {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long surrogateId;
-
   private long eventId;
   private String serviceName;
   private String instanceId;
@@ -89,14 +88,14 @@ public class Command {
   }
 
   public Command(TxEvent event) {
-    this(event.id(),
-        event.serviceName(),
-        event.instanceId(),
-        event.globalTxId(),
-        event.localTxId(),
-        event.parentTxId(),
-        event.compensationMethod(),
-        event.payloads());
+    this(event.getId(),
+        event.getServiceName(),
+        event.getInstanceId(),
+        event.getGlobalTxId(),
+        event.getGlobalTxId(),
+        event.getParentTxId(),
+        event.getCompensationMethod(),
+        event.getPayloads());
   }
 
   String serviceName() {

@@ -62,19 +62,20 @@ public class AlphaEventControllerTest {
     mockMvc.perform(get("/saga/events"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$.[0].globalTxId", is(someEvent.globalTxId())))
-        .andExpect(jsonPath("$.[0].localTxId", is(someEvent.localTxId())));
+        .andExpect(jsonPath("$.[0].globalTxId", is(someEvent.getGlobalTxId())))
+        .andExpect(jsonPath("$.[0].localTxId", is(someEvent.getLocalTxId())));
   }
 
   private TxEvent someEvent() {
-    return new TxEvent(
-        uniquify("serviceName"),
-        uniquify("instanceId"),
-        uniquify("globalTxId"),
-        uniquify("localTxId"),
-        UUID.randomUUID().toString(),
-        TxStartedEvent.name(),
-        this.getClass().getCanonicalName(),
-        uniquify("blah").getBytes());
+    return new TxEvent()
+            .serviceName(uniquify("serviceName"))
+            .instanceId(uniquify("instanceId"))
+            .globalTxId(uniquify("globalTxId"))
+            .localTxId(uniquify("localTxId"))
+            .parentTxId(UUID.randomUUID().toString())
+            .type(TxStartedEvent.name())
+            .compensationMethod(this.getClass().getCanonicalName())
+            .payloads(uniquify("blah").getBytes())
+            ;
   }
 }

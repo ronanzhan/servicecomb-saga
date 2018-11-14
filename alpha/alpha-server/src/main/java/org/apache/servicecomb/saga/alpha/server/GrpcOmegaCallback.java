@@ -39,11 +39,11 @@ class GrpcOmegaCallback implements OmegaCallback {
   @Override
   public void compensate(TxEvent event) {
     GrpcCompensateCommand command = GrpcCompensateCommand.newBuilder()
-        .setGlobalTxId(event.globalTxId())
-        .setLocalTxId(event.localTxId())
-        .setParentTxId(event.parentTxId() == null ? "" : event.parentTxId())
-        .setCompensationMethod(event.compensationMethod())
-        .setPayloads(ByteString.copyFrom(event.payloads()))
+        .setGlobalTxId(event.getGlobalTxId())
+        .setLocalTxId(event.getLocalTxId())
+        .setParentTxId(event.getParentTxId() == null ? "" : event.getParentTxId())
+        .setCompensationMethod(event.getCompensationMethod())
+        .setPayloads(ByteString.copyFrom(event.getPayloads()))
         .build();
     observer.onNext(command);
   }

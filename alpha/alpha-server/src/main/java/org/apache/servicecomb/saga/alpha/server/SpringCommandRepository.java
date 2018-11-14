@@ -58,7 +58,7 @@ public class SpringCommandRepository implements CommandRepository {
     Map<String, Command> commands = new LinkedHashMap<>();
 
     for (TxEvent event : events) {
-      commands.computeIfAbsent(event.localTxId(), k -> new Command(event));
+      commands.computeIfAbsent(event.getLocalTxId(), k -> new Command(event));
     }
 
     for (Command command : commands.values()) {
